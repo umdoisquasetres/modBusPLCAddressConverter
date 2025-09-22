@@ -3,34 +3,89 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Text.Json;
+using System.IO;
 
 namespace modBusCoverter
 {
+    // Class to represent the structure of modbus_config.json
+    public class ModbusConfig
+    {
+        public Dictionary<string, int> MemoryOffsets { get; set; } = new Dictionary<string, int>();
+        public Dictionary<string, string> MemoryPrefixes { get; set; } = new Dictionary<string, string>();
+    }
+
     public partial class MainWindow : Window
     {
-        private Dictionary<string, int> memoryOffsets = new Dictionary<string, int>
-        {
-            { "M", 3072 },
-            { "V", 512 },
-            { "X", 0 },
-            { "Y", 1536 },
-            { "T", 15360 },
-            { "C", 16384 }
-        };
-
-        private Dictionary<string, string> memoryPrefixes = new Dictionary<string, string>
-        {
-            { "M", "0x" },
-            { "V", "4x" },
-            { "X", "1x" },
-            { "Y", "0x" },
-            { "T", "4x" },
-            { "C", "4x" }
-        };
+        private Dictionary<string, int> memoryOffsets = new Dictionary<string, int>();
+        private Dictionary<string, string> memoryPrefixes = new Dictionary<string, string>();
 
         public MainWindow()
         {
             InitializeComponent();
+            LoadModbusConfig();
+        }
+
+        private void LoadModbusConfig()
+        {
+            string configFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "modbus_config.json");
+            if (File.Exists(configFilePath))
+            {
+                try
+                {
+                    string jsonString = File.ReadAllText(configFilePath);
+                    ModbusConfig? config = JsonSerializer.Deserialize<ModbusConfig>(jsonString);
+
+                    if (config != null)
+                    {
+                        memoryOffsets = config.MemoryOffsets;
+                        memoryPrefixes = config.MemoryPrefixes;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erro ao carregar a configuração Modbus: O arquivo JSON está vazio ou malformado.", "Erro de Configuração", MessageBoxButton.OK, MessageBoxImage.Error);
+                        SetDefaultConfig();
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    MessageBox.Show($"Erro de sintaxe no arquivo de configuração Modbus: {ex.Message}", "Erro de Configuração", MessageBoxButton.OK, MessageBoxImage.Error);
+                    SetDefaultConfig();
+                }
+                catch (IOException ex)
+                {
+                    MessageBox.Show($"Erro de E/S ao ler o arquivo de configuração Modbus: {ex.Message}", "Erro de Configuração", MessageBoxButton.OK, MessageBoxImage.Error);
+                    SetDefaultConfig();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Arquivo de configuração Modbus (modbus_config.json) não encontrado. Usando configurações padrão.", "Erro de Configuração", MessageBoxButton.OK, MessageBoxImage.Warning);
+                SetDefaultConfig();
+            }
+        }
+
+        private void SetDefaultConfig()
+        {
+            memoryOffsets = new Dictionary<string, int>
+            {
+                { "M", 3072 },
+                { "V", 512 },
+                { "X", 0 },
+                { "Y", 1536 },
+                { "T", 15360 },
+                { "C", 16384 }
+            };
+
+            memoryPrefixes = new Dictionary<string, string>
+            {
+                { "M", "0x" },
+                { "V", "4x" },
+                { "X", "1x" },
+                { "Y", "0x" },
+                { "T", "4x" },
+                { "C", "4x" }
+            };
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -60,8 +115,8 @@ namespace modBusCoverter
 
             if (memoryOffsets.TryGetValue(selectedMemoryType!, out int offset))
             {
-                int calculatedAddress = inputAddress + offset;
                 string prefix = memoryPrefixes.TryGetValue(selectedMemoryType!, out string? p) ? p : "";
+                int calculatedAddress = inputAddress + offset;
                 ResultTextBox.Text = $"{prefix} {calculatedAddress}";
             }
             else
@@ -99,12 +154,12 @@ namespace modBusCoverter
             if (inputModbusPrefix == "0x")
             {
                 // Prioritize M over Y for 0x addresses
-                if (modbusAddressValue >= memoryOffsets["M"])
+                if (memoryOffsets.ContainsKey("M") && modbusAddressValue >= memoryOffsets["M"])
                 {
                     int plcAddress = modbusAddressValue - memoryOffsets["M"];
                     result = $"M{plcAddress}";
                 }
-                else if (modbusAddressValue >= memoryOffsets["Y"])
+                else if (memoryOffsets.ContainsKey("Y") && modbusAddressValue >= memoryOffsets["Y"])
                 {
                     int plcAddress = modbusAddressValue - memoryOffsets["Y"];
                     result = $"Y{plcAddress}";
@@ -112,7 +167,7 @@ namespace modBusCoverter
             }
             else if (inputModbusPrefix == "1x")
             {
-                if (modbusAddressValue >= memoryOffsets["X"])
+                if (memoryOffsets.ContainsKey("X") && modbusAddressValue >= memoryOffsets["X"])
                 {
                     int plcAddress = modbusAddressValue - memoryOffsets["X"];
                     result = $"X{plcAddress}";
@@ -121,22 +176,22 @@ namespace modBusCoverter
             else if (inputModbusPrefix == "4x")
             {
                 // Prioritize V, then T, C, M for 4x addresses (common register types)
-                if (modbusAddressValue >= memoryOffsets["V"])
+                if (memoryOffsets.ContainsKey("V") && modbusAddressValue >= memoryOffsets["V"])
                 {
                     int plcAddress = modbusAddressValue - memoryOffsets["V"];
                     result = $"V{plcAddress}";
                 }
-                else if (modbusAddressValue >= memoryOffsets["T"])
+                else if (memoryOffsets.ContainsKey("T") && modbusAddressValue >= memoryOffsets["T"])
                 {
                     int plcAddress = modbusAddressValue - memoryOffsets["T"];
                     result = $"T{plcAddress}";
                 }
-                else if (modbusAddressValue >= memoryOffsets["C"])
+                else if (memoryOffsets.ContainsKey("C") && modbusAddressValue >= memoryOffsets["C"])
                 {
                     int plcAddress = modbusAddressValue - memoryOffsets["C"];
                     result = $"C{plcAddress}";
                 }
-                else if (modbusAddressValue >= memoryOffsets["M"] && memoryPrefixes["M"] == "4x") // M can also be 4x if configured
+                else if (memoryOffsets.ContainsKey("M") && memoryPrefixes.ContainsKey("M") && memoryPrefixes["M"] == "4x" && modbusAddressValue >= memoryOffsets["M"])
                 {
                     int plcAddress = modbusAddressValue - memoryOffsets["M"];
                     result = $"M{plcAddress}";

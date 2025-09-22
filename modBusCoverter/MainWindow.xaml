@@ -5,8 +5,117 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:modBusCoverter"
         mc:Ignorable="d"
-        Title="Calculadora de Endereços Modbus Haiwell" Height="350" Width="450" Loaded="Window_Loaded">
-    <Grid>
+        Title="Calculadora de Endereços Modbus Haiwell" Height="380" Width="480" Loaded="Window_Loaded"
+        FontFamily="Segoe UI" FontSize="14"
+        Background="#FF2D2D30" Foreground="#FFF0F0F0">
+
+    <Window.Resources>
+        <!-- Global Styles for a modern dark theme look -->
+        <Style TargetType="Label">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5,0,5,0"/>
+            <Setter Property="Foreground" Value="#FFF0F0F0"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderBrush" Value="#FF505050"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="#FF3E3E40"/>
+            <Setter Property="Foreground" Value="#FFF0F0F0"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderBrush" Value="#FF505050"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="#FF3E3E40"/>
+            <Setter Property="Foreground" Value="#FFF0F0F0"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Background" Value="#FF007ACC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FF007ACC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FF005DA6"/>
+                                <Setter Property="BorderBrush" Value="#FF005DA6"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#FF003F73"/>
+                                <Setter Property="BorderBrush" Value="#FF003F73"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="TabControl">
+            <Setter Property="BorderBrush" Value="#FF505050"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="#FF2D2D30"/>
+            <Setter Property="Foreground" Value="#FFF0F0F0"/>
+        </Style>
+
+        <Style TargetType="TabItem">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Background" Value="#FF3E3E40"/>
+            <Setter Property="BorderBrush" Value="#FF505050"/>
+            <Setter Property="BorderThickness" Value="1,1,1,0"/>
+            <Setter Property="Margin" Value="0,0,2,0"/>
+            <Setter Property="Foreground" Value="#FFF0F0F0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid>
+                            <Border Name="Border" 
+                                    Background="{TemplateBinding Background}" 
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="3,3,0,0">
+                                <ContentPresenter x:Name="ContentSite"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"
+                                                  ContentSource="Header"
+                                                  Margin="10,2"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#FF2D2D30"/>
+                                <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#FF4A4A4D"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Background="#FF2D2D30">
         <TabControl Margin="10">
             <TabItem Header="PLC para Modbus">
                 <Grid Margin="10">
@@ -22,16 +131,16 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Content="Tipo de Memória:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-                    <ComboBox x:Name="MemoryTypeComboBox" Grid.Row="0" Grid.Column="1" Margin="5" SelectedIndex="0"/>
+                    <Label Content="Tipo de Memória:" Grid.Row="0" Grid.Column="0"/>
+                    <ComboBox x:Name="MemoryTypeComboBox" Grid.Row="0" Grid.Column="1" SelectedIndex="0"/>
 
-                    <Label Content="Endereço:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBox x:Name="AddressTextBox" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                    <Label Content="Endereço:" Grid.Row="1" Grid.Column="0"/>
+                    <TextBox x:Name="AddressTextBox" Grid.Row="1" Grid.Column="1"/>
 
-                    <Button Content="Calcular" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Click="CalculateButton_Click"/>
+                    <Button Content="Calcular" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Click="CalculateButton_Click"/>
 
-                    <Label Content="Resultado:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBox x:Name="ResultTextBox" Grid.Row="3" Grid.Column="1" Margin="5" IsReadOnly="True"/>
+                    <Label Content="Resultado:" Grid.Row="3" Grid.Column="0"/>
+                    <TextBox x:Name="ResultTextBox" Grid.Row="3" Grid.Column="1" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Modbus para PLC">
@@ -48,13 +157,13 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Content="Endereço Modbus (ex: 4x 912):" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBox x:Name="ModbusAddressTextBox" Grid.Row="0" Grid.Column="1" Margin="5"/>
+                    <Label Content="Endereço Modbus (ex: 4x 912):" Grid.Row="0" Grid.Column="0"/>
+                    <TextBox x:Name="ModbusAddressTextBox" Grid.Row="0" Grid.Column="1"/>
 
-                    <Button Content="Converter" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Click="ConvertModbusToPLCButton_Click"/>
+                    <Button Content="Converter" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Click="ConvertModbusToPLCButton_Click"/>
 
-                    <Label Content="Resultado PLC:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBox x:Name="ResultPLCAddressTextBox" Grid.Row="2" Grid.Column="1" Margin="5" IsReadOnly="True"/>
+                    <Label Content="Resultado PLC:" Grid.Row="2" Grid.Column="0"/>
+                    <TextBox x:Name="ResultPLCAddressTextBox" Grid.Row="2" Grid.Column="1" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
         </TabControl>
