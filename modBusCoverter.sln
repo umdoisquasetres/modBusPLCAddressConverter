@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36511.14 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "modBusCoverter", "modBusCoverter\modBusCoverter.csproj", "{0372C714-61E5-4E04-8156-EAB26E18E1ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0372C714-61E5-4E04-8156-EAB26E18E1ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0372C714-61E5-4E04-8156-EAB26E18E1ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0372C714-61E5-4E04-8156-EAB26E18E1ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0372C714-61E5-4E04-8156-EAB26E18E1ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7FA0DE43-5EA4-4904-98DE-FD96E4D97186}
+	EndGlobalSection
+EndGlobal
